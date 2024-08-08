@@ -50,10 +50,8 @@ impl Sandbox for DapEq {
 
     fn update(&mut self, _message: Self::Message) {
         match _message {
-            DapEqCommands::Play => {
-                commands::play();
-            }
-            DapEqCommands::Pause => {}
+            DapEqCommands::Play => commands::play(),
+            DapEqCommands::Pause => commands::pause(),
             DapEqCommands::Forward => {}
             DapEqCommands::Backward => {}
             DapEqCommands::GoBack => {}
