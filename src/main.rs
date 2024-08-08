@@ -1,4 +1,5 @@
 use iced::{widget::{button, column, row}, Length, Sandbox, Settings, Pixels, window, Size};
+mod commands;
 
 fn main() -> iced::Result {
     let set = Settings {
@@ -23,37 +24,54 @@ fn main() -> iced::Result {
         default_text_size: Pixels(6.),
         antialiasing: true,
     };
-    MyApp::run(set)
+    DapEq::run(set)
+}
+#[derive(Debug, Clone)]
+enum DapEqCommands {
+    Play,
+    Pause,
+    Forward,
+    Backward,
+    GoBack,
 }
 
-struct MyApp;
+struct DapEq;
 
-impl Sandbox for MyApp {
-    type Message = ();
+impl Sandbox for DapEq {
+    type Message = DapEqCommands;
 
     fn new() -> Self {
         Self
     }
 
     fn title(&self) -> String {
-        String::from("My App")
+        String::from("DapEq")
     }
 
-    fn update(&mut self, _message: Self::Message) {}
+    fn update(&mut self, _message: Self::Message) {
+        match _message {
+            DapEqCommands::Play => {
+                commands::play();
+            }
+            DapEqCommands::Pause => {}
+            DapEqCommands::Forward => {}
+            DapEqCommands::Backward => {}
+            DapEqCommands::GoBack => {}
+        }
+    }
 
     fn view(&self) -> iced::Element<Self::Message> {
         column![
-            button("Shrink").width(Length::Shrink),
-            button("Fill").width(Length::Fill),
             row![
-                button("FillPortion 2").width(Length::FillPortion(2)),
-                button("FillPortion 1").width(Length::FillPortion(1)),
+                button(">").on_press(Self::Message::Play),
+                button("||").on_press(Self::Message::Pause),
+            ],
+            row![
+                button("<<").on_press(Self::Message::Backward),
+                button(">>").on_press(Self::Message::Forward),
+                button("<-").on_press(Self::Message::GoBack),
             ]
-            .spacing(10),
-            button("Fixed").width(Length::Fixed(100.)),
-            button("Fill (height)").height(Length::Fill),
         ]
-            .spacing(10)
-            .into()
+        .into()
     }
 }
