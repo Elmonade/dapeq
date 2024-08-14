@@ -4,6 +4,7 @@ use std::thread;
 use rodio::{Decoder, OutputStream, Sink};
 
 pub fn play() {
+    let path = "file_example_OOG_2MG.ogg";
     let _ = thread::Builder::new()
         .name("music_player".to_string())
         .spawn(move || {
@@ -14,8 +15,7 @@ pub fn play() {
             let sink = Sink::try_new(&stream_handle).unwrap();
 
             // Load a sound from a file, using a path relative to Cargo.toml
-            let file =
-                BufReader::new(File::open("file_example_OOG_2MG.ogg").unwrap());
+            let file = BufReader::new(File::open(path).unwrap());
             // Decode that sound file into a source
             let source = Decoder::new(file).unwrap();
             sink.append(source);
@@ -23,8 +23,10 @@ pub fn play() {
             // The sound plays in a separate thread.
             // This call will block the current thread until the sink
             // has finished playing all its queued sounds.
-            pause(&sink);
-            sink.sleep_until_end();
+
+            // pause(&sink);
+
+            // sink.sleep_until_end();
     });
 }
 
