@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use std::sync::mpsc;
 use std::thread;
 use iced::{Application, Command};
@@ -16,7 +15,6 @@ pub enum Control {
 }
 
 pub struct DapEq {
-    path: Option<PathBuf>,
     sender: mpsc::Sender<Control>,
 }
 
@@ -33,7 +31,6 @@ impl Application for DapEq {
             .spawn(move || {
                 let (_stream, stream_handle) = OutputStream::try_default().unwrap();
                 let sink = Sink::try_new(&stream_handle).unwrap();
-
                 loop {
                     if let Ok(command) = receiver.try_recv() {
                         commands::audio_command(command, &sink);
@@ -41,14 +38,7 @@ impl Application for DapEq {
                     thread::sleep(std::time::Duration::from_millis(100));
                 }
             });
-
-        (
-            DapEq {
-                path: None,
-                sender,
-            },
-            Command::none(),
-        )
+        (DapEq {sender}, Command::none())
     }
 
     fn title(&self) -> String {
@@ -63,9 +53,15 @@ impl Application for DapEq {
             Control::Pause => self.sender
                 .send(Control::Pause)
                 .expect("Couldn't send audio command."),
-            Control::Forward => {}
-            Control::Backward => {}
-            Control::GoBack => {}
+            Control::Forward => self.sender
+                .send(Control::Forward)
+                .expect("Can not skip forward."),
+            Control::Backward => self.sender
+                .send(Control::Backward)
+                .expect("Not implemented, yet."),
+            Control::GoBack => self.sender
+                .send(Control::GoBack)
+                .expect("Not implemented, yet.")
         }
         Command::none()
     }

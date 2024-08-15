@@ -1,7 +1,8 @@
-use iced::{Application, Pixels, Settings, Size};
-
 mod commands;
 mod scaffolding;
+
+use iced::{Application, Pixels, Settings, Size};
+use scaffolding::DapEq;
 
 fn main() -> iced::Result {
     let window_settings = iced::window::Settings {
@@ -23,5 +24,5 @@ fn main() -> iced::Result {
         // ..Settings::default()
     };
 
-    scaffolding::DapEq::run(settings)
+    DapEq::run(settings)
 }
