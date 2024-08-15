@@ -7,8 +7,7 @@ use crate::commands;
 
 #[derive(Debug, Clone)]
 pub enum Control {
-    Play,
-    Pause,
+    PlayPause,
     Forward,
     Backward,
     GoBack,
@@ -47,11 +46,8 @@ impl Application for DapEq {
 
     fn update(&mut self, _message: Self::Message) -> Command<Self::Message> {
         match _message {
-            Control::Play => self.sender
-                .send(Control::Play)
-                .expect("Couldn't send audio command."),
-            Control::Pause => self.sender
-                .send(Control::Pause)
+            Control::PlayPause => self.sender
+                .send(Control::PlayPause)
                 .expect("Couldn't send audio command."),
             Control::Forward => self.sender
                 .send(Control::Forward)
@@ -68,14 +64,13 @@ impl Application for DapEq {
 
     fn view(&self) -> iced::Element<'_, Self::Message> {
         column![
-            row![
-                button(">").on_press(Self::Message::Play),
-                button("||").on_press(Self::Message::Pause),
-            ],
+            button("<-").on_press(Self::Message::GoBack),
             row![
                 button("<<").on_press(Self::Message::Backward),
+                row![
+                    button(">/||").on_press(Self::Message::PlayPause),
+                ],
                 button(">>").on_press(Self::Message::Forward),
-                button("<-").on_press(Self::Message::GoBack),
             ]
         ]
             .into()

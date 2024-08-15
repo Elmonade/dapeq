@@ -6,21 +6,25 @@ use crate::scaffolding::Control;
 
 pub(crate) fn audio_command(_message: Control, sink: &Sink) {
     match _message {
-        Control::Play => play(sink),
-        Control::Pause => pause(sink),
+        Control::PlayPause => play_pause(sink),
         Control::Forward => {}
         Control::Backward => {}
         Control::GoBack => {}
     }
 }
 
-fn play(sink: &Sink) {
-    let path = "/home/jello/Downloads/sample-15s.mp3";
-    let file = BufReader::new(File::open(path).unwrap());
-    let source = Decoder::new(file).unwrap();
-    sink.append(source);
-}
+fn play_pause(sink: &Sink) {
+    if sink.empty() {
+        let path = "/home/jello/Downloads/sample-15s.mp3";
+        let file = BufReader::new(File::open(path).unwrap());
+        let source = Decoder::new(file).unwrap();
+        sink.append(source);
+        sink.play();
+        return
+    }
 
-fn pause(sink: &Sink) {
-    sink.pause();
+    match sink.is_paused() {
+        true => sink.play(),
+        false => sink.pause()
+    }
 }
