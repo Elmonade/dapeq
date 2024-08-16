@@ -1,9 +1,10 @@
 use std::sync::mpsc;
 use std::thread;
-use iced::{Application, Command};
-use iced::{widget::{column, row, button}};
+use iced::{Application, Command, Font};
+use iced::{widget::{column, row, button, Text}};
 use rodio::{OutputStream, Sink};
 use crate::commands;
+use iced_aw;
 
 #[derive(Debug, Clone)]
 pub enum Control {
@@ -15,6 +16,27 @@ pub enum Control {
 
 pub struct DapEq {
     sender: mpsc::Sender<Control>,
+}
+
+// ICONS
+const ICON: Font = Font::with_name("icons");
+
+enum Icon {
+    User,
+    Heart,
+    Calc,
+    CogAlt,
+}
+
+impl From<Icon> for char {
+    fn from(icon: Icon) -> Self {
+        match icon {
+            Icon::User => '\u{E800}',
+            Icon::Heart => '\u{E801}',
+            Icon::Calc => '\u{F1EC}',
+            Icon::CogAlt => '\u{E802}',
+        }
+    }
 }
 
 impl Application for DapEq {
@@ -72,8 +94,7 @@ impl Application for DapEq {
                 ],
                 button(">>").on_press(Self::Message::Forward),
             ]
-        ]
-            .into()
+        ].into()
     }
 }
 
