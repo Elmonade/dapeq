@@ -1,11 +1,9 @@
-use std::fs::File;
-use std::io::BufReader;
+mod icons;
+
 use std::sync::mpsc;
 use std::thread;
-use iced::{Application, Command, Element, Font};
-use iced::{widget::{column, row, button}};
-use iced::mouse::Button;
-use iced::widget::text;
+use iced::{Application, Command};
+use iced::{widget::{column, row}};
 use rodio::{OutputStream, Sink};
 use crate::commands;
 
@@ -25,28 +23,6 @@ pub enum State {
 pub struct DapEq {
     sender: mpsc::Sender<Control>,
     state: State,
-}
-
-// ICONS
-fn play_button<'a, Message>() -> Element<'a, Message> {
-    icon('\u{E800}')
-}
-fn pause_button<'a, Message>() -> Element<'a, Message> {
-    icon('\u{E801}')
-}
-fn forward_button<'a, Message>() -> Element<'a, Message> {
-    icon('\u{E802}')
-}
-fn backward_button<'a, Message>() -> Element<'a, Message> {
-    icon('\u{E803}')
-}
-fn go_back_button<'a, Message>() -> Element<'a, Message> {
-    icon('\u{E804}')
-}
-
-fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
-    const ICON: Font = Font::with_name("play_button");
-    text(codepoint).font(ICON).into()
 }
 
 impl Application for DapEq {
@@ -106,23 +82,22 @@ impl Application for DapEq {
         Command::none()
     }
 
-    fn view(&self) -> iced::Element<'_, Self::Message> {
+    fn view(&self) -> iced::Element<'_, Control> {
         let flip_button = match self.state {
             State::Paused =>
-                play_button(),
+                icons::play_button(),
             State::Playing =>
-                pause_button(),
+                icons::pause_button(),
 
         };
-        
+
         column![
-            button(go_back_button()).on_press(Self::Message::GoBack),
+            icons::action(icons::go_back_button(), Control::GoBack),
             row![
-                button(backward_button()).on_press(Self::Message::Backward),
-                button(flip_button).on_press(Self::Message::PlayPause),
-                button(forward_button()).on_press(Self::Message::Forward),
+                icons::action(icons::backward_button(), Control::Backward),
+                icons::action(flip_button, Control::PlayPause),
+                icons::action(icons::forward_button(), Control::Forward),
             ]
         ].into()
     }
 }
-
