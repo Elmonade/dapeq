@@ -1,10 +1,13 @@
+use std::fs::File;
+use std::io::BufReader;
 use std::sync::mpsc;
 use std::thread;
-use iced::{Application, Command, Font};
-use iced::{widget::{column, row, button, Text}};
+use iced::{Application, Command, Element, Font};
+use iced::{widget::{column, row, button}};
+use iced::mouse::Button;
+use iced::widget::text;
 use rodio::{OutputStream, Sink};
 use crate::commands;
-use iced_aw;
 
 #[derive(Debug, Clone)]
 pub enum Control {
@@ -14,29 +17,36 @@ pub enum Control {
     GoBack,
 }
 
+pub enum State {
+    Playing,
+    Paused,
+}
+
 pub struct DapEq {
     sender: mpsc::Sender<Control>,
+    state: State,
 }
 
 // ICONS
-const ICON: Font = Font::with_name("icons");
-
-enum Icon {
-    User,
-    Heart,
-    Calc,
-    CogAlt,
+fn play_button<'a, Message>() -> Element<'a, Message> {
+    icon('\u{E800}')
+}
+fn pause_button<'a, Message>() -> Element<'a, Message> {
+    icon('\u{E801}')
+}
+fn forward_button<'a, Message>() -> Element<'a, Message> {
+    icon('\u{E802}')
+}
+fn backward_button<'a, Message>() -> Element<'a, Message> {
+    icon('\u{E803}')
+}
+fn go_back_button<'a, Message>() -> Element<'a, Message> {
+    icon('\u{E804}')
 }
 
-impl From<Icon> for char {
-    fn from(icon: Icon) -> Self {
-        match icon {
-            Icon::User => '\u{E800}',
-            Icon::Heart => '\u{E801}',
-            Icon::Calc => '\u{F1EC}',
-            Icon::CogAlt => '\u{E802}',
-        }
-    }
+fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
+    const ICON: Font = Font::with_name("play_button");
+    text(codepoint).font(ICON).into()
 }
 
 impl Application for DapEq {
@@ -59,7 +69,13 @@ impl Application for DapEq {
                     thread::sleep(std::time::Duration::from_millis(100));
                 }
             });
-        (DapEq {sender}, Command::none())
+        (
+            DapEq {
+                sender,
+                state:State::Paused,
+            },
+            Command::none()
+        )
     }
 
     fn title(&self) -> String {
@@ -68,9 +84,15 @@ impl Application for DapEq {
 
     fn update(&mut self, _message: Self::Message) -> Command<Self::Message> {
         match _message {
-            Control::PlayPause => self.sender
-                .send(Control::PlayPause)
-                .expect("Couldn't send audio command."),
+            Control::PlayPause => {
+                self.sender
+                    .send(Control::PlayPause)
+                    .expect("Couldn't send audio command.");
+                self.state = match self.state {
+                    State::Playing => State::Paused,
+                    State::Paused => State::Playing,
+                }
+            },
             Control::Forward => self.sender
                 .send(Control::Forward)
                 .expect("Can not skip forward."),
@@ -85,14 +107,20 @@ impl Application for DapEq {
     }
 
     fn view(&self) -> iced::Element<'_, Self::Message> {
+        let flip_button = match self.state {
+            State::Paused =>
+                play_button(),
+            State::Playing =>
+                pause_button(),
+
+        };
+        
         column![
-            button("<-").on_press(Self::Message::GoBack),
+            button(go_back_button()).on_press(Self::Message::GoBack),
             row![
-                button("<<").on_press(Self::Message::Backward),
-                row![
-                    button(">/||").on_press(Self::Message::PlayPause),
-                ],
-                button(">>").on_press(Self::Message::Forward),
+                button(backward_button()).on_press(Self::Message::Backward),
+                button(flip_button).on_press(Self::Message::PlayPause),
+                button(forward_button()).on_press(Self::Message::Forward),
             ]
         ].into()
     }

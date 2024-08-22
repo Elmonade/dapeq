@@ -15,7 +15,7 @@ pub(crate) fn audio_command(_message: Control, sink: &Sink) {
 
 fn play_pause(sink: &Sink) {
     if sink.empty() {
-        let path = "/home/jello/Downloads/sample-15s.mp3";
+        let path = "/home/jello/Downloads/Toe - グッドバイ Goodbye Feat. Toki Asako.mp3";
         let file = BufReader::new(File::open(path).unwrap());
         let source = Decoder::new(file).unwrap();
         sink.append(source);

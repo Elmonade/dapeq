@@ -1,7 +1,7 @@
 mod commands;
 mod scaffolding;
 
-use iced::{Application, Pixels, Settings, Size};
+use iced::{Application, Font, Pixels, Settings, Size};
 use scaffolding::DapEq;
 
 fn main() -> iced::Result {
@@ -17,8 +17,10 @@ fn main() -> iced::Result {
         id: None,
         window: window_settings,
         flags: (),
-        fonts: vec![],
-        default_font: Default::default(),
+        fonts: vec![include_bytes!("fonts/play_button.ttf")
+            .as_slice()
+            .into()],
+        default_font: Font::MONOSPACE,
         default_text_size: Pixels(12.),
         antialiasing: false,
         // ..Settings::default()
