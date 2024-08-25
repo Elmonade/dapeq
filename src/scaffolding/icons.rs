@@ -24,9 +24,15 @@ fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
     text(codepoint).font(ICON).into()
 }
 
-pub fn action<'a>(content: Element<'a, Control>, on_press: Control) -> Element<'a, Control> {
+pub fn play_action(content: Element<Control>, on_press: Control) -> Element<Control> {
     button(container(content).width(20).center_x())
         .on_press(on_press)
         .padding([5, 10])
+        .into()
+}
+
+pub fn control_action(content: Element<Control>, on_press: Control) -> Element<Control> {
+    button(container(content).width(20).center_x())
+        .on_press(on_press)
         .into()
 }

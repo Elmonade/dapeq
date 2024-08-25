@@ -1,11 +1,14 @@
-mod icons;
-
 use std::sync::mpsc;
 use std::thread;
+
 use iced::{Application, Command};
-use iced::{widget::{column, row}};
+use iced::widget::{column, row, text};
+use iced::advanced::Widget;
 use rodio::{OutputStream, Sink};
+
 use crate::commands;
+
+mod icons;
 
 #[derive(Debug, Clone)]
 pub enum Control {
@@ -91,13 +94,27 @@ impl Application for DapEq {
 
         };
 
-        column![
-            icons::action(icons::go_back_button(), Control::GoBack),
+        let main_column = column![
             row![
-                icons::action(icons::backward_button(), Control::Backward),
-                icons::action(flip_button, Control::PlayPause),
-                icons::action(icons::forward_button(), Control::Forward),
+                text("DapEq").size(20),
             ]
-        ].into()
+                .padding([14,0,14,0]),
+            row![
+                icons::play_action(icons::backward_button(), Control::Backward),
+                icons::play_action(flip_button, Control::PlayPause),
+                icons::play_action(icons::forward_button(), Control::Forward),
+            ]
+                .align_items(iced::Alignment::Center)
+                .spacing(4),
+            column![
+                icons::control_action(icons::go_back_button(), Control::GoBack),
+            ]
+                .align_items(iced::Alignment::Start)
+                // Top, Right, Bottom, Left
+                .padding([22,100,0,0]),
+        ]
+            .align_items(iced::Alignment::Center);
+
+        main_column.into()
     }
 }
