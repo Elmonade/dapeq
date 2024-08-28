@@ -28,3 +28,11 @@ fn play_pause(sink: &Sink) {
         false => sink.pause()
     }
 }
+
+fn skip_forward(sink: &Sink) {
+    // TODO: Find the next audio file in dir and play.
+}
+
+fn skip_backward(sink: &Sink) {
+    //TODO: Play the previous song from the "cache?".
+}
