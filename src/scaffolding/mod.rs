@@ -1,10 +1,11 @@
+use std::fs::File;
+use std::io::BufReader;
 use std::sync::mpsc;
-use std::thread;
+use std::{fs, thread};
 
 use iced::{Application, Command};
 use iced::widget::{column, row, text};
-use iced::advanced::Widget;
-use rodio::{OutputStream, Sink};
+use rodio::{Decoder, OutputStream, Sink};
 
 use crate::commands;
 
@@ -41,6 +42,8 @@ impl Application for DapEq {
             .spawn(move || {
                 let (_stream, stream_handle) = OutputStream::try_default().unwrap();
                 let sink = Sink::try_new(&stream_handle).unwrap();
+                //TODO: Initialization should be done here!
+                setup(&sink);
                 loop {
                     if let Ok(command) = receiver.try_recv() {
                         commands::audio_command(command, &sink);
@@ -87,11 +90,8 @@ impl Application for DapEq {
 
     fn view(&self) -> iced::Element<'_, Control> {
         let flip_button = match self.state {
-            State::Paused =>
-                icons::play_button(),
-            State::Playing =>
-                icons::pause_button(),
-
+            State::Paused => icons::play_button(),
+            State::Playing => icons::pause_button(),
         };
 
         let main_column = column![
@@ -117,4 +117,24 @@ impl Application for DapEq {
 
         main_column.into()
     }
+}
+
+fn setup(sink: &Sink) {
+    //let path = "/home/jello/Downloads/Toe - グッドバイ Goodbye Feat. Toki Asako.mp3";
+    //let file = BufReader::new(File::open(path).unwrap());
+    //let source = Decoder::new(file).unwrap();
+    //sink.append(source);
+
+    let paths = fs::read_dir("/home/jello/Downloads/").unwrap();
+    for path in paths {
+        //println!("Name: {}", path.unwrap().path().display())
+        let file = BufReader::new(File::open(path.unwrap().path()).unwrap());
+        let source = Decoder::new(file).unwrap();
+        sink.append(source);
+    }
+    
+    
+    // I 'had' to do this. So is_paused will pick it up.
+    sink.play();
+    sink.pause();
 }
