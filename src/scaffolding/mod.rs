@@ -128,12 +128,21 @@ fn setup(sink: &Sink) {
     let paths = fs::read_dir("/home/jello/Downloads/").unwrap();
     for path in paths {
         //println!("Name: {}", path.unwrap().path().display())
-        let file = BufReader::new(File::open(path.unwrap().path()).unwrap());
-        let source = Decoder::new(file).unwrap();
-        sink.append(source);
+        let file_extension = path.unwrap().path();
+        println!("Unwrapping the file.");
+        if let Some(extension) = file_extension.extension() {
+            if extension == "mp3" {
+                println!("Extension is MP3.");
+                println!("Name: {}", file_extension.display());
+                let file = BufReader::new(File::open(file_extension).unwrap());
+                println!("Opened the file.");
+                let source = Decoder::new(file).unwrap();
+                sink.append(source);
+            }
+        }
     }
-    
-    
+
+
     // I 'had' to do this. So is_paused will pick it up.
     sink.play();
     sink.pause();
