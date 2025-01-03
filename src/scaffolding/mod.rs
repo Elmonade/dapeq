@@ -4,9 +4,9 @@ use std::sync::mpsc;
 use std::{fs, thread};
 
 use iced::{Application, Command};
-use iced::widget::{column, row, text};
+use iced::widget::{column, row, text, Column, Container};
 use rodio::{Decoder, OutputStream, Sink};
-
+use rodio::decoder::DecoderError;
 use crate::commands;
 
 mod icons;
@@ -112,28 +112,31 @@ impl Application for DapEq {
                 .align_items(iced::Alignment::Start)
                 // Top, Right, Bottom, Left
                 .padding([22,100,0,0]),
-        ]
-            .align_items(iced::Alignment::Center);
-
+        ];
         main_column.into()
+
+        //let main_container:Container<iced::Element<_>> =
+        //    Container::new(main_column.into())
+        //    .align_x(iced::alignment::Horizontal::Center)
+        //    .align_y(iced::alignment::Vertical::Center)
+        //    .width(iced::Length::Fill)
+        //    .height(iced::Length::Fill);
+        //main_container.into()
     }
 }
 
 fn setup(sink: &Sink) {
-    //let path = "/home/jello/Downloads/Toe - グッドバイ Goodbye Feat. Toki Asako.mp3";
-    //let file = BufReader::new(File::open(path).unwrap());
-    //let source = Decoder::new(file).unwrap();
-    //sink.append(source);
-
     let paths = fs::read_dir("/home/jello/Downloads/").unwrap();
     for path in paths {
         //println!("Name: {}", path.unwrap().path().display())
         let file = BufReader::new(File::open(path.unwrap().path()).unwrap());
-        let source = Decoder::new(file).unwrap();
-        sink.append(source);
+        let source = Decoder::new(file);
+        match source {
+            Err(_source) => println!("Lemon"),
+            Ok(_) => {sink.append(source.unwrap())}
+        }
     }
-    
-    
+
     // I 'had' to do this. So is_paused will pick it up.
     sink.play();
     sink.pause();

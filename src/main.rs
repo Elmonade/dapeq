@@ -7,9 +7,9 @@ use scaffolding::DapEq;
 fn main() -> iced::Result {
     const TERMINUS: Font = Font::with_name("TerminusTTF-4.49.3");
     let window_settings = iced::window::Settings {
-        size: Size::new(128., 128.),
+        // size: Size::new(128., 128.),
         position: Default::default(),
-        resizable: false,
+        // resizable: false,
         exit_on_close_request: true,
         ..Default::default()
     };

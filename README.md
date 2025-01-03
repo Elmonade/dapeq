@@ -1,7 +1,7 @@
 ## Music Player
 
-- Language: Rust
-- Framework: iced
-- Library: rodio
+- Language: [Rust](https://www.rust-lang.org/)
+- Framework: [iced](https://github.com/iced-rs/iced)
+- Library: [rodio](https://github.com/RustAudio/rodio)
 
 First attempt at learning Rust and new GUI framework.
