@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export PKG_CONFIG_SYSROOT_DIR=~/Study/Embedded/dapeq/sysroot
+export PKG_CONFIG_PATH=~/Study/Embedded/dapeq/sysroot/usr/lib/pkgconfig:~/Study/Embedded/dapeq/sysroot/usr/share/pkgconfig
+export PKG_CONFIG_LIBDIR=$PKG_CONFIG_PATH
+
+exec pkg-config "$@"
